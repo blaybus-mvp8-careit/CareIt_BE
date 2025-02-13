@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화 (필요에 따라 설정)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 추가
                 .authorizeHttpRequests(requests -> {
-                    requests.requestMatchers("/", "/api/auth/login", "/api/auth/signup", "/api/user/me").permitAll(); // 기본 경로 허용
+                    requests.requestMatchers("/", "/api/auth/login", "/api/auth/signup", "/api/auth/refresh", "/api/user/me").permitAll(); // 기본 경로 허용
                     requests.requestMatchers(HttpMethod.GET, "/api/users/mypage/manage/{userId}").permitAll(); // 홈 유저 정보 조회 허용
                     requests.requestMatchers(HttpMethod.GET, "/api/users/**").permitAll(); // 특정 GET 요청 허용
                     requests.requestMatchers(HttpMethod.POST, "/api/users").authenticated(); // POST 요청은 인증 필요
