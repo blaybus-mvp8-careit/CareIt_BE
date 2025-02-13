@@ -21,18 +21,13 @@ public class JwtTokenProvider {
     private final long ACCESS_TOKEN_VALIDITY = 60 * 60 * 1000L; // 1시간
     private final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000L; // 7일
 
-    // JwtBuilder로 Key 생성
-    public JwtTokenProvider() {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
-    }
-
     // Access Token 생성
     public String generateAccessToken(Long userId) {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALIDITY))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
@@ -42,7 +37,7 @@ public class JwtTokenProvider {
                 .setSubject(userId.toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
