@@ -3,6 +3,7 @@ package com.example.careit.controller;
 import com.example.careit.dto.AuthResponseDto;
 import com.example.careit.dto.LoginRequestDto;
 import com.example.careit.dto.SignupRequestDto;
+import com.example.careit.dto.TokenRefreshRequestDto;
 import com.example.careit.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,11 +32,9 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthResponseDto> refreshAccessToken(@RequestBody Map<String, String> request) {
-        String refreshToken = request.get("refreshToken");
-        return ResponseEntity.ok(authService.refreshAccessToken(refreshToken));
+    public ResponseEntity<AuthResponseDto> refreshAccessToken(@RequestBody TokenRefreshRequestDto request) {
+        return ResponseEntity.ok(authService.refreshAccessToken(request.getRefreshToken()));
     }
-
 
 }
 
