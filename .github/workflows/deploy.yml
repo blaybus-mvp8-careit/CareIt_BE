@@ -79,6 +79,13 @@ jobs:
               docker rm careit || true
             fi
             
+            # Copy .env file into the new container
+            echo "📂 Copying .env file into container"
+            docker create --name temp_container whwkahd3/careit:${{ env.DOCKER_TAG }}
+            docker cp /home/ubuntu/careit/.env temp_container:/app/.env
+            docker commit temp_container whwkahd3/careit:${{ env.DOCKER_TAG }}
+            docker rm temp_container
+            
             # Start new container
             echo "🐳 Docker Run"
             docker run -d --name careit \
@@ -86,7 +93,6 @@ jobs:
               --log-driver json-file \
               --log-opt max-size=10m \
               --log-opt max-file=3 \
-              --env-file /home/ubuntu/careit/.env \
               whwkahd3/careit:${{ env.DOCKER_TAG }}
             
             # Check
