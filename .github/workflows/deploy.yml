@@ -43,8 +43,8 @@ jobs:
       - name: Docker build
         run: |
           docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-          docker build -f ./Dockerfile -t jordy/careit:${{ steps.current-time.outputs.formattedTime }} .
-          docker push jordy/careit:${{ steps.current-time.outputs.formattedTime }}
+          docker build -f ./Dockerfile -t whwkahd3/careit:${{ steps.current-time.outputs.formattedTime }} .
+          docker push whwkahd3/careit:${{ steps.current-time.outputs.formattedTime }}
 
       - name: Set Docker Tag Output
         id: set-docker-tag
@@ -69,14 +69,14 @@ jobs:
             
             # Pull the new image
             echo "🐳 Docker Image Pull"
-            docker pull jordy/careit:${{ env.DOCKER_TAG }}
+            docker pull whwkahd3/careit:${{ env.DOCKER_TAG }}
 
             # Stop & Remove existing container if exists
             if [ $(docker ps -aq -f name=careit) ]; then
               echo "🐳 Docker Stop"
-              docker stop screenwiper_back || true
+              docker stop careit || true
               echo "🐳 Docker Remove"
-              docker rm screenwiper_back || true
+              docker rm careit || true
             fi
             
             # Start new container
@@ -86,7 +86,7 @@ jobs:
               --log-driver json-file \
               --log-opt max-size=10m \
               --log-opt max-file=3 \
-              jordy/careit:${{ env.DOCKER_TAG }}
+              whwkahd3/careit:${{ env.DOCKER_TAG }}
             
             # Check
             echo "🐳 Docker ps"
