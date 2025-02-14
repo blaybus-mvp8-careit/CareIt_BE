@@ -1,4 +1,4 @@
-package com.example.careit.config;
+/*package com.example.careit.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
@@ -60,3 +60,4 @@ public class CacheConfig {
 
 }
 
+*/
