@@ -11,11 +11,11 @@ public class RedisHandler {
 
     private final RedisConfig redisConfig;
 
-    public ListOperations<String, Object> getListOperations() {
+    public ListOperations<String, String> getListOperations() {
         return redisConfig.redisTemplate().opsForList();
     }
 
-    public ValueOperations<String, Object> getValueOperations() {
+    public ValueOperations<String, String> getValueOperations() {
         return redisConfig.redisTemplate().opsForValue();
     }
 

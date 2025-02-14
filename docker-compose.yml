@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # MySQL 서비스 설정
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DOCKER_MYSQL_DATABASE}
+      MYSQL_USER: ${DOCKER_MYSQL_USER}
+      MYSQL_PASSWORD: ${DOCKER_MYSQL_PASSWORD}
+    networks:
+      - backend
+    ports:
+      - "3306:3306"
+
+  # Redis 서비스 설정
+  redis:
+    image: redis:latest
+    container_name: redis_container
+    command: redis-server --requirepass ${DOCKER_REDIS_PASSWORD}
+    networks:
+      - backend
+    ports:
+      - "6379:6379"
+
+  # Spring Boot 애플리케이션 설정
+  app:
+    build: .
+    container_name: springboot_container
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${DOCKER_MYSQL_DATABASE}
+      SPRING_DATASOURCE_USERNAME: ${DOCKER_MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DOCKER_MYSQL_PASSWORD}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: ${DOCKER_REDIS_PORT}
+    networks:
+      - backend
+    ports:
+      - "8080:8080"
+
+networks:
+  backend:
+    driver: bridge
