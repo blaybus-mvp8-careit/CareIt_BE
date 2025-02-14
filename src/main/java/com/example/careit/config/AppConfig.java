@@ -9,7 +9,7 @@ import java.util.Objects;
 public class AppConfig {
     static {
         Dotenv dotenv = Dotenv.load(); // .env 파일 로드
-        System.setProperty("REDIS_HOST", Objects.requireNonNull(dotenv.get("REDIS_HOST")));
-        System.setProperty("REDIS_PORT", Objects.requireNonNull(dotenv.get("REDIS_PORT")));
+        // System.setProperty("REDIS_HOST", Objects.requireNonNull(dotenv.get("REDIS_HOST")));
+        // System.setProperty("REDIS_PORT", Objects.requireNonNull(dotenv.get("REDIS_PORT")));
     }
 }

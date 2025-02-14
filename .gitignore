@@ -36,4 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
+### 주요 정보 env 에 저장
 src/main/resources/.env
+.env

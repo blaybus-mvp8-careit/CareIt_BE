@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # MySQL 서비스 설정
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DOCKER_MYSQL_DATABASE}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - careit_network
+
+  # Redis 서비스 설정
+  redis:
+    image: redis:latest
+    container_name: redis_container
+    restart: always
+    command: redis-server --requirepass ${DOCKER_REDIS_PASSWORD}
+    ports:
+      - "6380:6379"
+    networks:
+      - careit_network
+
+  # Spring Boot 애플리케이션 설정
+  app:
+    build: .
+    container_name: springboot_container
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${DOCKER_MYSQL_DATABASE}
+      SPRING_DATASOURCE_USERNAME: ${DOCKER_MYSQL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DOCKER_MYSQL_PASSWORD}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: ${DOCKER_REDIS_PORT}
+    ports:
+      - "8081:8080"
+    networks:
+      - careit_network
+
+volumes:
+  mysql_data:
+
+networks:
+  careit_network:
+    driver: bridge # 컨테이너 간의 통신을 가능하도록 설정
