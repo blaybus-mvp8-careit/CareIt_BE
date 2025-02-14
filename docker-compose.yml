@@ -12,7 +12,7 @@ services:
       MYSQL_USER: ${DOCKER_MYSQL_USER}
       MYSQL_PASSWORD: ${DOCKER_MYSQL_PASSWORD}
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -25,7 +25,7 @@ services:
     restart: always
     command: redis-server --requirepass ${DOCKER_REDIS_PASSWORD}
     ports:
-      - "6379:6379"
+      - "6380:6379"
     networks:
       - careit_network
 
@@ -44,7 +44,7 @@ services:
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: ${DOCKER_REDIS_PORT}
     ports:
-      - "8080:8080"
+      - "8081:8080"
     networks:
       - careit_network
 
