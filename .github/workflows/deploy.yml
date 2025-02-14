@@ -86,6 +86,7 @@ jobs:
               --log-driver json-file \
               --log-opt max-size=10m \
               --log-opt max-file=3 \
+              --env-file /home/ubuntu/careit/.env \
               whwkahd3/careit:${{ env.DOCKER_TAG }}
             
             # Check
