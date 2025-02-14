@@ -29,7 +29,7 @@ services:
 
   # Spring Boot 애플리케이션 설정
   app:
-    build: .
+    build: ..
     container_name: springboot_container
     restart: always
     depends_on:
