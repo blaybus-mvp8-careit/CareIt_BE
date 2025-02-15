@@ -1,0 +1,4 @@
+rootProject.name = 'careit'
+
+// 두 번째 careit 디렉토리 포함
+include 'careit'

@@ -39,3 +39,6 @@ out/
 ### 주요 정보 env 에 저장
 .env
 careit/src/main/resources/.env
+
+gradlew
+gradlew.bat
