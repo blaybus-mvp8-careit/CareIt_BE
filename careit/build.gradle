@@ -62,9 +62,10 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-	// MySQL JDBC 드라이버 추가
-	implementation 'mysql:mysql-connector-java'
+	// MySQL JDBC 드라이버 추가 (버전 명시)
+	implementation 'mysql:mysql-connector-java:8.0.30'
 }
+
 
 
 
