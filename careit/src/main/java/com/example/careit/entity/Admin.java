@@ -14,7 +14,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Admin {
+public class Admin { // 관리자
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,27 +25,12 @@ public class Admin {
 
     @ManyToOne
     @JoinColumn(name = "center_id", nullable = false)
-    private Center center;
+    private Center center; // 관리자 소속 센터
 
-    @Column(nullable = false)
+    @Column(length = 255, nullable = false)
     private String name;
 
-    @Temporal(TemporalType.DATE)
-    private Date birthDate;
-
+    @Column(length = 255, nullable = false)
     private String phone;
-
-    private String address;
-
-    private Boolean ownsBathVehicle;
-
-    @Column(length = 500)
-    private String introduction;
-
-    @Temporal(TemporalType.DATE)
-    private Date centerStartDate;
-
-    @Temporal(TemporalType.DATE)
-    private Date centerEndDate;
 }
 

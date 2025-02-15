@@ -27,37 +27,35 @@ public class Caregiver {
     private String name;
 
     @Temporal(TemporalType.DATE)
-    private Date birthDate;
+    private Date birthDate; // 변동될 수 있음. 피그마에 여쭤봄
 
+    @Enumerated(EnumType.STRING)
+    private Gender gender; //       "
+
+    @Column(nullable = false)
     private String phone;
 
+    @Column(nullable = false)
     private String address;
 
-    private String certificateName;
+    @Column(nullable = false)
+    private String certificateName; // 자격증 이름
 
-    private String certificateNumber;
+    @Column(nullable = false)
+    private String certificateNumber; // 자격증 번호
 
-    private Boolean ownsCar;
+    @Column(nullable = false)
+    private Boolean ownsCar; // 차량 소유 여부
 
-    private String majorExperience;
+    private String majorExperience; // 주요 경력
 
-    private Integer experienceYears;
+    private String experienceYears; // 경력 기간
 
     @Column(length = 500)
-    private String introduction;
+    private String introduction; // 한 줄 소개
 
-    private String workArea;
+    @Column(nullable = false)
+    private Boolean dementiaTraining; // 치매 교육 여부
 
-    private String workDays;
-
-    private String workHours;
-
-    private Integer desiredSalary;
-
-    private Boolean dementiaTraining;
-
-    private String personalityKeywords;
-
-    private String strongService;
 }
 
