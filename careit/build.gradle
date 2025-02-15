@@ -61,7 +61,11 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// MySQL JDBC 드라이버 추가
+	implementation 'mysql:mysql-connector-java'
 }
+
 
 
 tasks.named('test') {
