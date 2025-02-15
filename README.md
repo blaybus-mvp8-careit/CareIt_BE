@@ -1,6 +1,12 @@
 # CareIt_BE
 요양 보호사와 어르신 매칭 플랫폼
 
+## 기술 스택
+- springboot
+- mysql
+- redis
+- docker
+
 ## 작업 규칙
 - 브랜치 파서 작업 후,
 - `main` 브랜치로 PR 날려서 머지
