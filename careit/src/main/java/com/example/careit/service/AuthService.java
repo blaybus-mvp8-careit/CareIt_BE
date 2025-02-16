@@ -78,6 +78,14 @@ public class AuthService {
         String accessToken = jwtTokenProvider.createAccessToken(user.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
 
+        // MySQL에 TOKEN 저장
+        Token token = new Token();
+        token.setUser(user);
+        token.setAccessToken(accessToken);
+        token.setRefreshToken(refreshToken);
+        token.setCreatedAt(new Date());
+        tokenRepository.save(token);
+
         refreshTokenService.saveRefreshToken(user.getId().toString(), refreshToken);
 
         return new AuthResponseDto(accessToken, refreshToken);
