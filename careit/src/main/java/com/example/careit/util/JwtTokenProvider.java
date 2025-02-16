@@ -1,12 +1,10 @@
 package com.example.careit.util;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
 import java.util.Date;
 
 @Slf4j
@@ -16,13 +14,11 @@ public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private Key key;
-
-    private final long ACCESS_TOKEN_VALIDITY = 60 * 60 * 1000L; // 1시간
+    private final long ACCESS_TOKEN_VALIDITY = 24 * 60 * 60 * 1000L; // 1일
     private final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000L; // 7일
 
     // Access Token 생성
-    public String generateAccessToken(Long userId) {
+    public String createAccessToken(Long userId) {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .setIssuedAt(new Date())
@@ -32,7 +28,7 @@ public class JwtTokenProvider {
     }
 
     // Refresh Token 생성
-    public String generateRefreshToken(Long userId) {
+    public String createRefreshToken(Long userId) {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .setIssuedAt(new Date())

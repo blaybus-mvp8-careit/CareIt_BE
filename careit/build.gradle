@@ -64,6 +64,9 @@ dependencies {
 
 	// MySQL JDBC 드라이버 추가 (버전 명시)
 	implementation 'mysql:mysql-connector-java:8.0.30'
+
+	// Amazon 접근 설정에 필요
+	implementation 'software.amazon.awssdk:s3:2.20.148' // 최신 버전으로 변경 가능
 }
 
 
