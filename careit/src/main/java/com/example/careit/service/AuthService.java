@@ -95,6 +95,11 @@ public class AuthService {
     }
 
     public AuthResponseDto refreshAccessToken(String refreshToken) {
+        // 토큰 만료 여부 확인
+        if (jwtTokenProvider.isTokenExpired(refreshToken)) {
+            throw new RuntimeException("리프레시 토큰이 만료되었습니다. 다시 로그인해주세요.");
+        }
+
         Claims claims = jwtTokenProvider.getClaims(refreshToken);
         String userId = claims.getSubject();
 
