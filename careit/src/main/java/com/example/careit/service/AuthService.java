@@ -19,11 +19,17 @@ import java.util.Date;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final S3Uploader s3Uploader;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
 
-    public AuthResponseDto signup(SignupRequestDto request) {
+    public AuthResponseDto signUp(SignupRequestDto request) {
+        String photoUrl = null;
+        if (request.getPhoto() != null) {
+            photoUrl = s3Uploader.upload(request.getPhoto(), "profile");
+        }
+
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("이미 존재하는 이메일입니다.");
         }
@@ -32,11 +38,11 @@ public class AuthService {
                 null, request.getEmail(),
                 passwordEncoder.encode(request.getPassword()),
                 request.getRole(), new Date(),
-                request.getPhotoUrl()
+                photoUrl
         ));
 
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getId());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
+        String accessToken = jwtTokenProvider.createAccessToken(user.getId());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
 
         refreshTokenService.saveRefreshToken(user.getId().toString(), refreshToken);
 
@@ -51,8 +57,8 @@ public class AuthService {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getId());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
+        String accessToken = jwtTokenProvider.createAccessToken(user.getId());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
 
         refreshTokenService.saveRefreshToken(user.getId().toString(), refreshToken);
 
@@ -68,7 +74,7 @@ public class AuthService {
             throw new RuntimeException("유효하지 않은 리프레시 토큰입니다.");
         }
 
-        String newAccessToken = jwtTokenProvider.generateAccessToken(Long.parseLong(userId));
+        String newAccessToken = jwtTokenProvider.createAccessToken(Long.parseLong(userId));
         return new AuthResponseDto(newAccessToken, refreshToken);
     }
 
