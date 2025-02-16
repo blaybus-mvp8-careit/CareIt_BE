@@ -22,7 +22,5 @@ public class SignupRequestDto {
 
     @NotNull
     private Role role; // ADMIN, CAREGIVER
-
-    private MultipartFile photo; // String → MultipartFile 로 변경
 }
 

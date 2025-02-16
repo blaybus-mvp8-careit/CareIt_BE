@@ -11,7 +11,9 @@ import com.example.careit.util.S3Uploader;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,16 +29,15 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
 
-    public AuthResponseDto signUp(SignupRequestDto request) throws IOException {
+    public AuthResponseDto signUp(SignupRequestDto request, MultipartFile photo) throws IOException {
         String photoUrl = null;
-        MultipartFile photoFile = request.getPhoto(); // MultipartFile 로 받음
-
-        if (photoFile != null && !photoFile.isEmpty()) {
-            photoUrl = s3Uploader.upload(photoFile, "profile"); // S3Uploader에 MultipartFile 넘기기
-        }
 
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("이미 존재하는 이메일입니다.");
+        }
+
+        if (photo != null && !photo.isEmpty()) {
+            photoUrl = s3Uploader.upload(photo, "profile"); // S3Uploader에 MultipartFile 넘기기
         }
 
         User user = userRepository.save(new User(
