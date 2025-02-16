@@ -1,11 +1,11 @@
 package com.example.careit.controller;
 
-import com.example.careit.dto.AuthResponseDto;
-import com.example.careit.dto.LoginRequestDto;
-import com.example.careit.dto.SignupRequestDto;
-import com.example.careit.dto.TokenRefreshRequestDto;
+import com.example.careit.dto.*;
+import com.example.careit.exception.InvalidPasswordException;
+import com.example.careit.exception.UserNotFoundException;
 import com.example.careit.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,7 +36,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody LoginRequestDto request) {
-        return ResponseEntity.ok(authService.login(request));
+        AuthResponseDto response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/refresh")
