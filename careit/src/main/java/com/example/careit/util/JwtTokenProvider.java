@@ -40,24 +40,24 @@ public class JwtTokenProvider {
     // 토큰 검증
     public boolean validateToken(String token) {
         try {
-            JwtParser jwtParser = Jwts.parser()  // parserBuilder를 사용해서 JwtParser 생성
+            Jwts.parser()
                     .setSigningKey(secretKey)
-                    .build();
-            jwtParser.parseClaimsJws(token);  // parseClaimsJws 호출
+                    .build()
+                    .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
-    // 토큰에서 이메일 추출
-    public String getEmailFromToken(String token) {
-        Claims claims = Jwts.parser()  // parser() 사용
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)  // parseClaimsJws 호출
-                .getBody();
-        return claims.getSubject();  // Claims에서 subject(사용자 ID) 추출
+    // 토큰 만료 여부 확인
+    public boolean isTokenExpired(String token) {
+        try {
+            Claims claims = getClaims(token);
+            return claims.getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true; // 만료된 경우 true 반환
+        }
     }
 
     // Claims 추출
