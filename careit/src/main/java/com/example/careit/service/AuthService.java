@@ -4,7 +4,7 @@ import com.example.careit.dto.AuthResponseDto;
 import com.example.careit.dto.LoginRequestDto;
 import com.example.careit.dto.SignupRequestDto;
 import com.example.careit.entity.User;
-import com.example.careit.entity.Role;  // 명시적으로 패키지 포함
+import com.example.careit.entity.Role;
 import com.example.careit.repository.UserRepository;
 import com.example.careit.util.JwtTokenProvider;
 import com.example.careit.util.S3Uploader;
@@ -12,7 +12,9 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Date;
 
 @Service
@@ -25,10 +27,12 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
 
-    public AuthResponseDto signUp(SignupRequestDto request) {
+    public AuthResponseDto signUp(SignupRequestDto request) throws IOException {
         String photoUrl = null;
-        if (request.getPhotoUrl() != null) {
-            photoUrl = s3Uploader.upload(request.getPhotoUrl(), "profile");
+        MultipartFile photoFile = request.getPhoto(); // MultipartFile 로 받음
+
+        if (photoFile != null && !photoFile.isEmpty()) {
+            photoUrl = s3Uploader.upload(photoFile, "profile"); // S3Uploader에 MultipartFile 넘기기
         }
 
         if (userRepository.existsByEmail(request.getEmail())) {
