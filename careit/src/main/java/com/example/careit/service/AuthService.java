@@ -5,6 +5,9 @@ import com.example.careit.dto.LoginRequestDto;
 import com.example.careit.dto.SignupRequestDto;
 import com.example.careit.entity.User;
 import com.example.careit.entity.Token;
+import com.example.careit.exception.BadRequestException;
+import com.example.careit.exception.InvalidPasswordException;
+import com.example.careit.exception.UserNotFoundException;
 import com.example.careit.repository.UserRepository;
 import com.example.careit.repository.TokenRepository;
 import com.example.careit.util.JwtTokenProvider;
@@ -33,7 +36,7 @@ public class AuthService {
         String photoUrl = null;
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("이미 존재하는 이메일입니다.");
+            throw new BadRequestException("이미 존재하는 이메일입니다.");
         }
 
         if (photo != null && !photo.isEmpty()) {
@@ -69,14 +72,22 @@ public class AuthService {
 
     public AuthResponseDto login(LoginRequestDto request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("이메일이 존재하지 않습니다."));
+                .orElseThrow(() -> new UserNotFoundException("이메일이 존재하지 않습니다."));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+            throw new InvalidPasswordException("비밀번호가 일치하지 않습니다.");
         }
 
         String accessToken = jwtTokenProvider.createAccessToken(user.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
+
+        // MySQL에 TOKEN 저장
+        Token token = new Token();
+        token.setUser(user);
+        token.setAccessToken(accessToken);
+        token.setRefreshToken(refreshToken);
+        token.setCreatedAt(new Date());
+        tokenRepository.save(token);
 
         refreshTokenService.saveRefreshToken(user.getId().toString(), refreshToken);
 
