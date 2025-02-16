@@ -7,6 +7,7 @@ import com.example.careit.entity.User;
 import com.example.careit.entity.Role;  // 명시적으로 패키지 포함
 import com.example.careit.repository.UserRepository;
 import com.example.careit.util.JwtTokenProvider;
+import com.example.careit.util.S3Uploader;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,8 +27,8 @@ public class AuthService {
 
     public AuthResponseDto signUp(SignupRequestDto request) {
         String photoUrl = null;
-        if (request.getPhoto() != null) {
-            photoUrl = s3Uploader.upload(request.getPhoto(), "profile");
+        if (request.getPhotoUrl() != null) {
+            photoUrl = s3Uploader.upload(request.getPhotoUrl(), "profile");
         }
 
         if (userRepository.existsByEmail(request.getEmail())) {
