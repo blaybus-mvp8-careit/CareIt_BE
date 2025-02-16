@@ -23,6 +23,7 @@ import java.util.Date;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final TokenRepository tokenRepository;
     private final S3Uploader s3Uploader;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
@@ -39,12 +40,16 @@ public class AuthService {
             photoUrl = s3Uploader.upload(photo, "profile"); // S3Uploader에 MultipartFile 넘기기
         }
 
-        User user = userRepository.save(new User(
-                null, request.getEmail(),
-                passwordEncoder.encode(request.getPassword()),
-                request.getRole(), new Date(),
-                photoUrl
-        ));
+        // User 객체 생성
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRole());
+        user.setCreatedAt(new Date());
+        user.setPhotoUrl(photoUrl);
+
+        // User 저장
+        user = userRepository.save(user);
 
         String accessToken = jwtTokenProvider.createAccessToken(user.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
