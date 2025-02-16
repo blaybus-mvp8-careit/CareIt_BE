@@ -4,16 +4,15 @@ import com.example.careit.dto.AuthResponseDto;
 import com.example.careit.dto.LoginRequestDto;
 import com.example.careit.dto.SignupRequestDto;
 import com.example.careit.entity.User;
-import com.example.careit.entity.Role;
+import com.example.careit.entity.Token;
 import com.example.careit.repository.UserRepository;
+import com.example.careit.repository.TokenRepository;
 import com.example.careit.util.JwtTokenProvider;
 import com.example.careit.util.S3Uploader;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -49,6 +48,14 @@ public class AuthService {
 
         String accessToken = jwtTokenProvider.createAccessToken(user.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
+
+        // MySQL에 TOKEN 저장
+        Token token = new Token();
+        token.setUser(user);
+        token.setAccessToken(accessToken);
+        token.setRefreshToken(refreshToken);
+        token.setCreatedAt(new Date());
+        tokenRepository.save(token);
 
         refreshTokenService.saveRefreshToken(user.getId().toString(), refreshToken);
 
