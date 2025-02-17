@@ -1,10 +1,7 @@
 package com.example.careit.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "caregiver_ask")
@@ -12,14 +9,16 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class CaregiverAsk { // 요양 보호사 근무 조건
 
     @Id
     @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;   //요양보호사_id
 
-    @OneToOne
-    @JoinColumn(name = "caregiver_id")
+    @OneToOne(fetch = FetchType.LAZY) // 1:1 매핑
+    @JoinColumn(name = "caregiver_id") // unique 추가 - 중복 등록 방지
     private Caregiver careGiver; // careGiver테이블과 1:1 매핑
 
     @Column(nullable = false)

@@ -67,4 +67,13 @@ public class JwtTokenProvider {
                 .build();
         return jwtParser.parseClaimsJws(token).getBody();  // parseClaimsJws 호출
     }
+    // 토큰에서 userId 추출 - 정설화 임의 추가
+    public Long getUserIdFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return Long.parseLong(claims.getSubject());  //  Long 타입 userId(user의 기본키) 추출
+    }
 }
