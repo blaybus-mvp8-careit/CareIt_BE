@@ -20,7 +20,7 @@ public class Center {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "admin_id", nullable = false)
+    @JoinColumn(name = "admin_id") //, nullable = false
     private Admin registeredBy; // 등록 관리자 아이디
 
     @Column(nullable = false)
