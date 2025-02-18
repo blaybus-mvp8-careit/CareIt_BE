@@ -4,14 +4,21 @@ import com.example.careit.dto.AuthResponseDto;
 import com.example.careit.dto.LoginRequestDto;
 import com.example.careit.dto.SignupRequestDto;
 import com.example.careit.entity.User;
-import com.example.careit.entity.Role;  // 명시적으로 패키지 포함
+import com.example.careit.entity.Token;
+import com.example.careit.exception.BadRequestException;
+import com.example.careit.exception.InvalidPasswordException;
+import com.example.careit.exception.UserNotFoundException;
 import com.example.careit.repository.UserRepository;
+import com.example.careit.repository.TokenRepository;
 import com.example.careit.util.JwtTokenProvider;
+import com.example.careit.util.S3Uploader;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Date;
 
 @Service
@@ -19,24 +26,44 @@ import java.util.Date;
 public class AuthService {
 
     private final UserRepository userRepository;
+    private final TokenRepository tokenRepository;
+    private final S3Uploader s3Uploader;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
 
-    public AuthResponseDto signup(SignupRequestDto request) {
+    public AuthResponseDto signUp(SignupRequestDto request, MultipartFile photo) throws IOException {
+        String photoUrl = null;
+
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("이미 존재하는 이메일입니다.");
+            throw new BadRequestException("이미 존재하는 이메일입니다.");
         }
 
-        User user = userRepository.save(new User(
-                null, request.getEmail(),
-                passwordEncoder.encode(request.getPassword()),
-                request.getRole(), new Date(),
-                request.getPhotoUrl()
-        ));
+        if (photo != null && !photo.isEmpty()) {
+            photoUrl = s3Uploader.upload(photo, "profile"); // S3Uploader에 MultipartFile 넘기기
+        }
 
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getId());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
+        // User 객체 생성
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRole());
+        user.setCreatedAt(new Date());
+        user.setPhotoUrl(photoUrl);
+
+        // User 저장
+        user = userRepository.save(user);
+
+        String accessToken = jwtTokenProvider.createAccessToken(user.getId());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
+
+        // MySQL에 TOKEN 저장
+        Token token = new Token();
+        token.setUser(user);
+        token.setAccessToken(accessToken);
+        token.setRefreshToken(refreshToken);
+        token.setCreatedAt(new Date());
+        tokenRepository.save(token);
 
         refreshTokenService.saveRefreshToken(user.getId().toString(), refreshToken);
 
@@ -45,14 +72,22 @@ public class AuthService {
 
     public AuthResponseDto login(LoginRequestDto request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("이메일이 존재하지 않습니다."));
+                .orElseThrow(() -> new UserNotFoundException("이메일이 존재하지 않습니다."));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+            throw new InvalidPasswordException("비밀번호가 일치하지 않습니다.");
         }
 
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getId());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
+        String accessToken = jwtTokenProvider.createAccessToken(user.getId());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
+
+        // MySQL에 TOKEN 저장
+        Token token = new Token();
+        token.setUser(user);
+        token.setAccessToken(accessToken);
+        token.setRefreshToken(refreshToken);
+        token.setCreatedAt(new Date());
+        tokenRepository.save(token);
 
         refreshTokenService.saveRefreshToken(user.getId().toString(), refreshToken);
 
@@ -60,6 +95,11 @@ public class AuthService {
     }
 
     public AuthResponseDto refreshAccessToken(String refreshToken) {
+        // 토큰 만료 여부 확인
+        if (jwtTokenProvider.isTokenExpired(refreshToken)) {
+            throw new RuntimeException("리프레시 토큰이 만료되었습니다. 다시 로그인해주세요.");
+        }
+
         Claims claims = jwtTokenProvider.getClaims(refreshToken);
         String userId = claims.getSubject();
 
@@ -68,7 +108,7 @@ public class AuthService {
             throw new RuntimeException("유효하지 않은 리프레시 토큰입니다.");
         }
 
-        String newAccessToken = jwtTokenProvider.generateAccessToken(Long.parseLong(userId));
+        String newAccessToken = jwtTokenProvider.createAccessToken(Long.parseLong(userId));
         return new AuthResponseDto(newAccessToken, refreshToken);
     }
 
