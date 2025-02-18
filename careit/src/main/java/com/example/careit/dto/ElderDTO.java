@@ -4,6 +4,8 @@ package com.example.careit.dto;
 import com.example.careit.entity.Admin;
 import com.example.careit.entity.Elder;
 import com.example.careit.entity.Gender;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,16 +17,29 @@ import java.util.Date;
 public class ElderDTO {
 
     private Long id;
+    @NotBlank
     private String name;
+    @NotNull
     private Date birthDate;
+    @NotNull
     private Gender gender;
+    @NotBlank
     private String careGrade; // 장기 요양 등급
+    @NotBlank
     private String address; // 주소
+    @NotBlank
     private String careDate; // 돌봄 시작 날짜
+    @NotBlank
     private String careDays; // 돌봄 요일
+    @NotBlank
     private String careStartTime; // 돌봄 시작 시간
+    @NotBlank
     private String careEndTime; // 돌봄 종료 시간
+    @NotBlank
     private String serviceItems; // 케어 항목
+    @NotNull
+    private Boolean dementiaSymptoms; // 치매 여부
+    @NotBlank
     private String dementia; // 치매 증상
     private String housemate; //동거인 여부
     private String diseaseItems; // 질병 항목
@@ -36,7 +51,7 @@ public class ElderDTO {
     @Builder
     public ElderDTO(Long id, String name, Date birthDate, Gender gender, String careGrade, String address,
                     String careDate, String careDays, String careStartTime, String careEndTime, String serviceItems,
-                    String dementia, String housemate, String diseaseItems,
+                    Boolean dementiaSymptoms,String dementia, String housemate, String diseaseItems,
                     String guardianContact, String precautions, String photo ) {
         this.id = id;
         this.name = name;
@@ -49,6 +64,7 @@ public class ElderDTO {
         this.careStartTime = careStartTime;
         this.careEndTime = careEndTime;
         this.serviceItems = serviceItems;
+        this.dementiaSymptoms = dementiaSymptoms;
         this.dementia = dementia;
         this.housemate = housemate;
         this.diseaseItems = diseaseItems;
@@ -71,6 +87,7 @@ public class ElderDTO {
                 .careStartTime(careStartTime)
                 .careEndTime(careEndTime)
                 .serviceItems(serviceItems)
+                .dementiaSymptoms(dementiaSymptoms)
                 .dementia(dementia)
                 .housemate(housemate)
                 .diseaseItems(diseaseItems)
@@ -94,6 +111,7 @@ public class ElderDTO {
                 .careStartTime(elder.getCareStartTime())
                 .careEndTime(elder.getCareEndTime())
                 .serviceItems(elder.getServiceItems())
+                .dementiaSymptoms(elder.getDementiaSymptoms())
                 .dementia(elder.getDementia())
                 .housemate(elder.getHousemate())
                 .diseaseItems(elder.getDiseaseItems())
@@ -114,6 +132,7 @@ public class ElderDTO {
         elder.setCareStartTime(careStartTime);
         elder.setCareEndTime(careEndTime);
         elder.setServiceItems(serviceItems);
+        elder.setDementiaSymptoms(dementiaSymptoms);
         elder.setDementia(dementia);
         elder.setHousemate(housemate);
         elder.setDiseaseItems(diseaseItems);
@@ -121,5 +140,4 @@ public class ElderDTO {
         elder.setPrecautions(precautions);
         elder.setPhoto(photo);
     }
-
 }

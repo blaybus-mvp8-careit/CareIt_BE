@@ -1,12 +1,10 @@
 package com.example.careit.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "centers")
@@ -14,6 +12,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Center {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +21,9 @@ public class Center {
     @ManyToOne
     @JoinColumn(name = "admin_id") //, nullable = false
     private Admin registeredBy; // 등록 관리자 아이디
+
+    @OneToMany(mappedBy = "center")
+    private List<Admin> admins; // 임의 추가
 
     @Column(nullable = false)
     private String name; // 센터 이름
@@ -53,5 +55,9 @@ public class Center {
     public enum CenterGrade {
         GRADE_A, GRADE_B, GRADE_C, GRADE_D, UNKNOWN // 필요에 따라 등급 추가
     }
+    public enum AdminStatus {
+        PENDING, // 인증 대기 상태
+        APPROVED, // 인증 완료 상태
+        REJECTED  // 인증 거절 상태
+    }
 }
-
