@@ -1,5 +1,6 @@
 package com.example.careit.dto;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -10,10 +11,10 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class AdminProfileDto {
-    private Long id;  //관리자로 ID
+    private Long id;  //필요없는 듯 나중에 삭제하기
 
-    @NotNull
-    private Long centerId;
+    @Nullable
+    private Long centerId; // centerID만 전달
     @NotBlank
     private String name;
     @NotBlank
