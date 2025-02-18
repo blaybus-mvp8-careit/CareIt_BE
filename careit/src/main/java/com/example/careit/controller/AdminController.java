@@ -17,7 +17,7 @@ public class AdminController {
     @PostMapping("/profile/admin")  // 관리자 프로필 등록
     public ResponseEntity<AdminProfileDto> createAdmin(
             @RequestParam @NotNull Long userId,
-            @RequestParam @NotNull Long centerId,
+            @RequestParam Long centerId, //@NotNull
             @RequestBody @Valid AdminProfileDto dto) {
         return ResponseEntity.ok(adminService.createAdmin(userId, centerId, dto));
     }

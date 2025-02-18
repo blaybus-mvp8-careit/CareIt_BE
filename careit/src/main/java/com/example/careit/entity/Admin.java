@@ -22,10 +22,10 @@ public class Admin { // 관리자
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "center_id", nullable = false)
+    @JoinColumn(name = "center_id",nullable = true) //, nullable = false // 수락 전에는 null 가능
     private Center center; // 관리자 소속 센터
 
-    @JoinColumn(name = "address", nullable = false)
+    @Column(name = "address", nullable = false)
     private String address;
 
     @Column(length = 255, nullable = false)
