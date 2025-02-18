@@ -1,12 +1,10 @@
 package com.example.careit.util;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
 import java.util.Date;
 
 @Slf4j
@@ -16,13 +14,11 @@ public class JwtTokenProvider {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    private Key key;
-
-    private final long ACCESS_TOKEN_VALIDITY = 60 * 60 * 1000L; // 1시간
+    private final long ACCESS_TOKEN_VALIDITY = 24 * 60 * 60 * 1000L; // 1일
     private final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000L; // 7일
 
     // Access Token 생성
-    public String generateAccessToken(Long userId) {
+    public String createAccessToken(Long userId) {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .setIssuedAt(new Date())
@@ -32,7 +28,7 @@ public class JwtTokenProvider {
     }
 
     // Refresh Token 생성
-    public String generateRefreshToken(Long userId) {
+    public String createRefreshToken(Long userId) {
         return Jwts.builder()
                 .setSubject(userId.toString())
                 .setIssuedAt(new Date())
@@ -44,24 +40,24 @@ public class JwtTokenProvider {
     // 토큰 검증
     public boolean validateToken(String token) {
         try {
-            JwtParser jwtParser = Jwts.parser()  // parserBuilder를 사용해서 JwtParser 생성
+            Jwts.parser()
                     .setSigningKey(secretKey)
-                    .build();
-            jwtParser.parseClaimsJws(token);  // parseClaimsJws 호출
+                    .build()
+                    .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
 
-    // 토큰에서 이메일 추출
-    public String getEmailFromToken(String token) {
-        Claims claims = Jwts.parser()  // parser() 사용
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)  // parseClaimsJws 호출
-                .getBody();
-        return claims.getSubject();  // Claims에서 subject(사용자 ID) 추출
+    // 토큰 만료 여부 확인
+    public boolean isTokenExpired(String token) {
+        try {
+            Claims claims = getClaims(token);
+            return claims.getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true; // 만료된 경우 true 반환
+        }
     }
 
     // Claims 추출
@@ -70,5 +66,14 @@ public class JwtTokenProvider {
                 .setSigningKey(secretKey)
                 .build();
         return jwtParser.parseClaimsJws(token).getBody();  // parseClaimsJws 호출
+    }
+    // 토큰에서 userId 추출 - 정설화 임의 추가
+    public Long getUserIdFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return Long.parseLong(claims.getSubject());  //  Long 타입 userId(user의 기본키) 추출
     }
 }
