@@ -22,8 +22,8 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<AuthResponseDto> signup(
-            @RequestPart SignupRequestDto request,  // SignupRequestDto에서 request 부분을 받음
-            @RequestPart(required = false) MultipartFile photo) {
+            @RequestPart("request") SignupRequestDto request,  // SignupRequestDto에서 request 부분을 받음
+            @RequestPart(value = "photo", required = false) MultipartFile photo) {
 
         try {
             AuthResponseDto response = authService.signUp(request, photo);
