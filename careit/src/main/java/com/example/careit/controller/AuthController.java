@@ -23,8 +23,8 @@ public class AuthController {
 
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AuthResponseDto> signup(
-            @RequestPart("request") SignupRequestDto request,  // SignupRequestDto에서 request 부분을 받음
-            @RequestPart(value = "photo", required = false) MultipartFile photo) {
+            @ModelAttribute SignupRequestDto request,  // SignupRequestDto에서 request 부분을 받음
+            @RequestParam(value = "photo", required = false) MultipartFile photo) {
 
         // photo는 SignupRequestDto 안에 포함시키고, 이를 signUp 메서드에 전달할 수 있도록 처리
         try {
