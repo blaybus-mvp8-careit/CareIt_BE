@@ -22,5 +22,6 @@ public class SignupRequestDto {
 
     @NotNull
     private Role role; // ADMIN, CAREGIVER
-}
 
+    private MultipartFile photo;  // 사진 파일 추가 (Multipart로 받기 위해)
+}

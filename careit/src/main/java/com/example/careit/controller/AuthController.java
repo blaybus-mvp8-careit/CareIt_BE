@@ -6,6 +6,7 @@ import com.example.careit.exception.UserNotFoundException;
 import com.example.careit.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,12 +21,16 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/signup")
+    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AuthResponseDto> signup(
             @RequestPart("request") SignupRequestDto request,  // SignupRequestDto에서 request 부분을 받음
             @RequestPart(value = "photo", required = false) MultipartFile photo) {
 
+        // photo는 SignupRequestDto 안에 포함시키고, 이를 signUp 메서드에 전달할 수 있도록 처리
         try {
+            if (photo != null) {
+                request.setPhoto(photo);  // 파일을 DTO에 설정
+            }
             AuthResponseDto response = authService.signUp(request, photo);
             return ResponseEntity.ok(response);
         } catch (IOException e) {
